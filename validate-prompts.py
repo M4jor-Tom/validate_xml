@@ -99,7 +99,8 @@ def validate_with_schema(xml_tree: etree._ElementTree, xsd_schema: etree.XMLSche
         True if the XML is valid, False otherwise.
     """
     if xsd_schema.validate(xml_tree):
-        print(f"{COLOR_OK}[OK] {xml_path} is valid.{COLOR_RESET}")
+        if log_if_success:
+            print(f"{COLOR_OK}[OK] {xml_path} is valid.{COLOR_RESET}")
         return True
     else:
         print(f"{COLOR_ERROR}[KO] {xml_path} is NOT valid.{COLOR_RESET}")
@@ -133,8 +134,11 @@ def main():
     parser = argparse.ArgumentParser(description="Validate XML files against XSD (local or online).")
     parser.add_argument("xml_path", help="Path to an XML file or directory containing XML files.")
     parser.add_argument("--xsd", help="Optional local XSD file to override xsi:noNamespaceSchemaLocation.", default=None)
+    parser.add_argument("-v", help="Wether logging is enabled in case of success", action=argparse.BooleanOptionalAction, default=False)
 
     args = parser.parse_args()
+    global log_if_success
+    log_if_success = args.v
 
     if os.path.isdir(args.xml_path):
         validate_xmls_in_directory(args.xml_path, args.xsd)
